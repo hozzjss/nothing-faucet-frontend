@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { validateStacksAddress } from '@stacks/transactions';
 import { Flex, Box, Text, Input, Button } from '@blockstack/ui';
-
+const apiUrl = 'https://nothing-api.grtfl.art';
 const getContractBalance = async () => {
-  const contractBalance = await fetch(
-    `https://shrouded-reaches-23790.herokuapp.com/faucet-balance`
-  ).then(res => res.json());
+  const contractBalance = await fetch(`${apiUrl}/faucet-balance`).then(res => res.json());
   return contractBalance;
 };
 
 const getNothings = async stxAddress => {
-  const contractResult = await fetch(`https://shrouded-reaches-23790.herokuapp.com/faucet`, {
+  const contractResult = await fetch(`${apiUrl}/faucet`, {
     method: 'POST',
     body: JSON.stringify({
       address: stxAddress,
@@ -25,7 +23,7 @@ const getNothings = async stxAddress => {
 const StackingResult = () => {
   const [result, setResult] = useState('');
   const [stxAddress, setStxAddress] = useState('');
-  const [errMsg,setErrMsg] = useState('')
+  const [errMsg, setErrMsg] = useState('');
   const isValidAddress = useMemo(() => stxAddress && validateStacksAddress(stxAddress), [
     stxAddress,
   ]);
@@ -60,14 +58,14 @@ const StackingResult = () => {
       getNothings(stxAddress)
         .then(result => {
           if (result.message) {
-            setErrMsg(result.message)
+            setErrMsg(result.message);
           } else {
-            setResult(result);
+            setResult(result.txid);
           }
           setIsLoading(false);
         })
-        .catch(async (res) => {
-          console.log(res)
+        .catch(async res => {
+          console.log(res);
           setIsLoading(false);
         });
     }
@@ -100,8 +98,8 @@ const StackingResult = () => {
           </Box>
           {errMsg && !isLoading && (
             <>
-              <Box fontWeight='bold' mb={4} width="100%">
-                <Text fontWeight='bold' fontSize='display.medium' color="red">
+              <Box fontWeight="bold" mb={4} width="100%">
+                <Text fontWeight="bold" fontSize="display.medium" color="red">
                   {errMsg}
                 </Text>
               </Box>
@@ -109,12 +107,12 @@ const StackingResult = () => {
           )}
           {result && isValidAddress && !isLoading && (
             <>
-              <Box fontWeight='bold' mb={4} width="100%">
+              <Box fontWeight="bold" mb={4} width="100%">
                 Transaction submitted:
                 <a
                   target="_blank"
                   rel="noopener noreferrer "
-                  href={`https://explorer.stacks.co/txid/0x${result}?chain=mainnet`}
+                  href={`https://explorer.stacks.co/txid/${result}?chain=mainnet`}
                 >
                   View here
                 </a>
@@ -123,9 +121,13 @@ const StackingResult = () => {
           )}
 
           <Box mb={4} width="100%">
-            <Text size="display.medium" fontWeight="bold">Done doing nothing with nothings?</Text>
+            <Text size="display.medium" fontWeight="bold">
+              Done doing nothing with nothings?
+            </Text>
             <br />
-            <Text size="display.medium"  fontWeight="bold">Wanna donate stacks so nothing can keep on giving?</Text>
+            <Text size="display.medium" fontWeight="bold">
+              Wanna donate stacks so nothing can keep on giving?
+            </Text>
             <br />
             <Text size="display.medium" fontWeight="bold">
               Send to this address:
